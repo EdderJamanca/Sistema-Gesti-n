@@ -1,0 +1,58 @@
+﻿@inject NavigationManager NavigationManager
+@inject ProductosVendidosService producVenService
+@inject ProductosService pruductoService
+@inject VentasService ventaService
+<EditForm Model="ProductoVendido" OnValidSubmit="CrearOActualizarProductoVendido" FormName="usuario-form">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="pprvendido-producto">Producto</label>
+        <InputSelect class="form-control" id="pprvendido-producto" @bind-Value="ProductoVendido.IdProducto">
+            @foreach (var producto in Productos)
+            {
+                <option value="@producto.Id">@producto.Descripcion</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group">
+        <label for="pprvendido-stock">Stock</label>
+        <InputNumber type="number" class="form-control" id="pprvendido-stock" @bind-Value="ProductoVendido.Stock" />
+    </div>
+    <div class="form-group">
+        <label for="pprvendido-venta">Ventas</label>
+        <InputSelect class="form-control" id="pprvendido-venta" @bind-Value="ProductoVendido.IdVenta">
+            @foreach (var venta in Ventas)
+            {
+                <option value="@venta.Id">@venta.Comentario</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-5">Guardar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public ProductoVendido ProductoVendido { get; set; }
+    public List<Producto> Productos { get; set; }
+    public List<Venta> Ventas { get; set; }
+    protected override void OnInitialized()
+    {
+        Productos = pruductoService.GetProducts();
+        Ventas = ventaService.GetVentas();
+    }
+    public void CrearOActualizarProductoVendido()
+    {
+        if (ProductoVendido.Id > 0)
+        {
+            producVenService.UpdateProductoVendido(ProductoVendido);
+        }
+        else
+        {
+            producVenService.CreateProductoVendido(ProductoVendido);
+        }
+
+        NavigationManager.NavigateTo("/ProductoVendidos");
+    }
+}
